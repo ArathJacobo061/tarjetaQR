@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reparaciones JARO</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --navy:#0D1B2A; --orange:#FF6B00; --ice:#00D4FF; --card-bg:#142030; }
+  body { background:var(--navy); min-height:100vh; display:flex; flex-direction:column; align-items:center; font-family:'Barlow',sans-serif; color:white; overflow-x:hidden; padding-bottom:40px; }
+
+  /* HERO */
+  .hero { width:100%; max-width:420px; padding:52px 24px 24px; text-align:center; position:relative; }
+  .hero::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:280px; height:280px; background:radial-gradient(circle,rgba(255,107,0,0.13) 0%,transparent 70%); pointer-events:none; }
+  .hero-tag { display:inline-block; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:var(--ice); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:5px 14px; border-radius:20px; margin-bottom:16px; }
+  .hero-name { font-family:'Bebas Neue',cursive; font-size:78px; line-height:0.88; letter-spacing:4px; }
+  .hero-name span { color:var(--orange); }
+  .hero-sub { font-size:11px; font-weight:400; color:rgba(255,255,255,0.35); letter-spacing:3px; text-transform:uppercase; margin-top:12px; line-height:1.6; }
+  .hero-person { margin-top:22px; display:flex; align-items:center; justify-content:center; gap:12px; }
+  .hero-avatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--orange),#FF9A3C); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',cursive; font-size:17px; flex-shrink:0; }
+  .hero-person-name { font-size:15px; font-weight:700; text-align:left; }
+  .hero-person-role { font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-align:left; }
+
+  /* SECTION LABEL */
+  .section-label { font-size:10px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.22); text-transform:uppercase; margin:20px 0 10px; width:100%; max-width:420px; padding:0 20px; }
+
+  /* LINK CARDS */
+  .links { width:100%; max-width:420px; padding:0 20px; display:flex; flex-direction:column; gap:11px; }
+  .link-card { display:flex; align-items:center; gap:16px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:15px 18px; text-decoration:none; color:white; transition:all 0.18s ease; cursor:pointer; position:relative; overflow:hidden; }
+  .link-card:hover { border-color:rgba(255,255,255,0.15); transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,0.4); }
+  .link-card.whatsapp { border-left:3px solid #25D366; }
+  .link-card.web      { border-left:3px solid var(--orange); }
+  .link-card.portfolio{ border-left:3px solid var(--ice); }
+  .link-card.maps     { border-left:3px solid #4A90E2; }
+  .link-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .link-icon.wa  { background:rgba(37,211,102,0.13); }
+  .link-icon.web { background:rgba(255,107,0,0.13); }
+  .link-icon.pf  { background:rgba(0,212,255,0.13); }
+  .link-icon.mp  { background:rgba(74,144,226,0.13); }
+  .link-title { font-size:15px; font-weight:700; }
+  .link-desc  { font-size:12px; color:rgba(255,255,255,0.38); margin-top:2px; }
+  .link-arrow { margin-left:auto; opacity:0.25; flex-shrink:0; }
+
+  /* MAPS BUTTON GROUP */
+  .maps-group { width:100%; max-width:420px; padding:0 20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .maps-btn { display:flex; align-items:center; justify-content:center; gap:9px; background:var(--card-bg); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:14px 12px; text-decoration:none; color:white; font-size:13px; font-weight:600; transition:all 0.18s; cursor:pointer; }
+  .maps-btn:hover { border-color:rgba(255,255,255,0.18); transform:translateY(-1px); }
+  .maps-btn.google { border-left:3px solid #4285F4; }
+  .maps-btn.apple  { border-left:3px solid #A3A3A3; }
+
+  /* ADDRESS CARD */
+  .address-card { width:100%; max-width:420px; padding:0 20px; }
+  .address-inner { background:var(--card-bg); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:16px 18px; display:flex; align-items:flex-start; gap:14px; }
+  .address-pin { width:38px; height:38px; border-radius:10px; background:rgba(74,144,226,0.13); display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .address-label { font-size:13px; font-weight:700; color:rgba(255,255,255,0.9); margin-bottom:4px; }
+  .address-text { font-size:12px; color:rgba(255,255,255,0.45); line-height:1.6; }
+
+  /* SERVICES */
+  .services { width:100%; max-width:420px; padding:0 20px; }
+  .services-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; }
+  .service-item { background:var(--card-bg); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:14px 8px; text-align:center; }
+  .service-name { font-size:11px; font-weight:600; color:rgba(255,255,255,0.65); line-height:1.35; margin-top:6px; }
+
+  /* FOOTER */
+  .footer { width:100%; max-width:420px; padding:30px 20px 0; text-align:center; }
+  .footer-brand { font-family:'Bebas Neue',cursive; font-size:26px; letter-spacing:4px; color:rgba(255,255,255,0.12); }
+  .footer-line { width:40px; height:2px; background:linear-gradient(90deg,var(--ice),var(--orange)); border-radius:2px; margin:10px auto 0; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Servicios de Reparación</div>
+  <div class="hero-name">JARO<br><span>REPAIRS</span></div>
+  <div class="hero-sub">Cajas Secas · Cajas Refrigeradas<br>Sistemas de Refrigeración</div>
+  <div class="hero-person">
+    <div class="hero-avatar">OJ</div>
+    <div>
+      <div class="hero-person-name">Octavio Jacobo Ruiz</div>
+      <div class="hero-person-role">Técnico Especialista</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACTO -->
+<div class="section-label">Contáctanos</div>
+<div class="links">
+
+  <!-- WhatsApp -->
+  <a class="link-card whatsapp" href="https://wa.me/526674355739?text=Hola%2C%20vi%20su%20tarjeta%20y%20necesito%20información%20sobre%20sus%20servicios" target="_blank">
+    <div class="link-icon wa">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </div>
+    <div class="link-text">
+      <div class="link-title">WhatsApp</div>
+      <div class="link-desc">Escríbenos directo · 667 435 57 39</div>
+    </div>
+    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </a>
+
+  <!-- Segundo teléfono -->
+  <a class="link-card whatsapp" href="tel:+526671708470" style="border-left-color:#25D366;">
+    <div class="link-icon wa">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.09 6.09l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    </div>
+    <div class="link-text">
+      <div class="link-title">Llamar</div>
+      <div class="link-desc">667 170 84 70</div>
+    </div>
+    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </a>
+
+  <!-- Email -->
+  <a class="link-card web" href="mailto:jaro_reparaciones@hotmail.com">
+    <div class="link-icon web">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+    </div>
+    <div class="link-text">
+      <div class="link-title">Correo electrónico</div>
+      <div class="link-desc">jaro_reparaciones@hotmail.com</div>
+    </div>
+    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </a>
+
+  <!-- Portafolio placeholder -->
+  <a class="link-card portfolio" href="#" onclick="alert('¡Próximamente! Agrega aquí tu galería de trabajos.')">
+    <div class="link-icon pf">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+    </div>
+    <div class="link-text">
+      <div class="link-title">Portafolio de trabajos</div>
+      <div class="link-desc">Próximamente · Galería de reparaciones</div>
+    </div>
+    <svg class="link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+  </a>
+
+</div>
+
+<!-- UBICACIÓN -->
+<div class="section-label">Cómo llegar</div>
+
+<div class="address-card">
+  <div class="address-inner">
+    <div class="address-pin">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    </div>
+    <div>
+      <div class="address-label">Taller Reparaciones JARO</div>
+      <div class="address-text">Calle Pedro Moreno s/n<br>Campo el Diez, Culiacán, Sinaloa<br>México</div>
+    </div>
+  </div>
+</div>
+
+<div class="maps-group" style="margin-top:10px;">
+  <!-- Google Maps -->
+  <a class="maps-btn google"
+     href="https://www.google.com/maps/search/?api=1&query=Calle+Pedro+Moreno+s/n+Campo+el+Diez+Culiacan+Sinaloa+Mexico"
+     target="_blank" id="btn-google">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#4285F4"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg>
+    Google Maps
+  </a>
+
+  <!-- Apple / Waze según dispositivo -->
+  <a class="maps-btn apple"
+     href="#"
+     target="_blank" id="btn-apple">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#A3A3A3"/><circle cx="12" cy="9" r="2.5" fill="white"/></svg>
+    <span id="btn-apple-label">Apple Maps</span>
+  </a>
+</div>
+
+<!-- Botón Waze (ancho completo) -->
+<div style="width:100%;max-width:420px;padding:10px 20px 0;">
+  <a class="maps-btn" style="border-left:3px solid #00BFFF;width:100%;"
+     href="https://waze.com/ul?q=Calle+Pedro+Moreno+Culiacan+Sinaloa&navigate=yes"
+     target="_blank">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#00BFFF"><circle cx="12" cy="10" r="8" fill="#00BFFF" opacity="0.2"/><text y="14" x="12" text-anchor="middle" font-size="12" fill="#00BFFF" font-weight="bold">W</text></svg>
+    Abrir en Waze
+  </a>
+</div>
+
+<!-- SERVICIOS -->
+<div class="section-label" style="margin-top:24px;">Nuestros servicios</div>
+<div class="services">
+  <div class="services-grid">
+
+    <div class="service-item">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M7 7V5"/><path d="M17 7V5"/></svg>
+      <div class="service-name">Cajas<br>Secas</div>
+    </div>
+
+    <div class="service-item">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M12 13v3"/><path d="M10 14l2-1 2 1"/></svg>
+      <div class="service-name">Cajas<br>Refrigeradas</div>
+    </div>
+
+    <div class="service-item">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4A90E2" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+      <div class="service-name">Sistemas de<br>Refrigeración</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-brand">REPARACIONES JARO</div>
+  <div class="footer-line"></div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.18);margin-top:14px;letter-spacing:1px;">Culiacán, Sinaloa · México</div>
+</div>
+
+<script>
+  // Detectar iOS para mostrar Apple Maps, Android para Google Maps alternativo
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isMac = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
+  const appleBtn = document.getElementById('btn-apple');
+  const appleLabel = document.getElementById('btn-apple-label');
+  const addr = "Calle+Pedro+Moreno+s/n+Campo+el+Diez+Culiacan+Sinaloa+Mexico";
+
+  if (isIOS || isMac) {
+    appleBtn.href = "maps://maps.apple.com/?q=" + addr;
+    appleLabel.textContent = "Apple Maps";
+  } else {
+    appleBtn.href = "https://maps.google.com/maps?daddr=" + addr + "&dirflg=d";
+    appleLabel.textContent = "Cómo llegar";
+    appleBtn.querySelector('path').setAttribute('fill', '#34A853');
+  }
+</script>
+
+</body>
+</html>
